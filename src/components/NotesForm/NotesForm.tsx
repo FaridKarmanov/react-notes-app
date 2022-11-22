@@ -32,6 +32,13 @@ export const NotesForm = () => {
         };
         dispatch(addTag(tagValue));
       } else if (index !== -1) {
+        const firstHashTag = hashTagWord.slice(0, index);
+        const tagValue = {
+          value: firstHashTag,
+          id: uuids4(),
+        };
+        dispatch(addTag(tagValue));
+
         const newStr = hashTagWord
           .split("")
           .splice(index + 1)

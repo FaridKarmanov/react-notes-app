@@ -24,6 +24,7 @@ export const Note = ({ text, id }: IProps) => {
   const { value, onChange } = useInput(text);
   const debounceValue = useDebounce(value, 500);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getHashTags = (str: string) => {
     if (!str.includes("#")) {
     } else {
@@ -36,6 +37,13 @@ export const Note = ({ text, id }: IProps) => {
         };
         dispatch(addTag(tagValue));
       } else if (index !== -1) {
+        const firstHashTag = hashTagWord.slice(0, index);
+        const tagValue = {
+          value: firstHashTag,
+          id: uuids4(),
+        };
+        dispatch(addTag(tagValue));
+
         const newStr = hashTagWord
           .split("")
           .splice(index + 1)
