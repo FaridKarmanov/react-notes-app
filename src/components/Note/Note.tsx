@@ -22,28 +22,33 @@ export const Note = ({ text, id }: IProps) => {
   const [state, setState] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const { value, onChange } = useInput(text);
-  const debounceValue = useDebounce(value, 1000);
+  const debounceValue = useDebounce(value, 500);
 
-  useEffect(() => {
-    if (debounceValue.indexOf("#") >= 0) {
-      const tag = debounceValue.slice(debounceValue.indexOf("#"));
-      const index = tag.indexOf(" ");
+  const getHashTags = (str: string) => {
+    if (!str.includes("#")) {
+    } else {
+      const hashTagWord = str.split("").splice(str.indexOf("#")).join("");
+      const index = hashTagWord.indexOf(" ");
       if (index === -1) {
         const tagValue = {
-          value: tag.slice(0),
+          value: hashTagWord,
           id: uuids4(),
         };
         dispatch(addTag(tagValue));
-      } else {
-        const tagValue = {
-          value: tag.slice(0, index),
-          id: uuids4(),
-        };
-        dispatch(addTag(tagValue));
+      } else if (index !== -1) {
+        const newStr = hashTagWord
+          .split("")
+          .splice(index + 1)
+          .join("");
+        getHashTags(newStr);
       }
     }
+  };
+
+  useEffect(() => {
+    getHashTags(debounceValue);
     dispatch(editNode({ id, value }));
-  }, [debounceValue, id, dispatch, value]);
+  }, [debounceValue, id, dispatch, getHashTags, value]);
 
   return (
     <ListItem>

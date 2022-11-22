@@ -20,24 +20,29 @@ export const NotesForm = () => {
 
   const dispatch = useAppDispatch();
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    if (data.value.indexOf("#") >= 0) {
-      const tag = data.value.slice(data.value.indexOf("#"));
-      const index = tag.indexOf(" ");
+  const getHashTags = (str: string) => {
+    if (!str.includes("#")) {
+    } else {
+      const hashTagWord = str.split("").splice(str.indexOf("#")).join("");
+      const index = hashTagWord.indexOf(" ");
       if (index === -1) {
         const tagValue = {
-          value: tag.slice(0),
+          value: hashTagWord,
           id: uuids4(),
         };
         dispatch(addTag(tagValue));
-      } else {
-        const tagValue = {
-          value: tag.slice(0, index),
-          id: uuids4(),
-        };
-        dispatch(addTag(tagValue));
+      } else if (index !== -1) {
+        const newStr = hashTagWord
+          .split("")
+          .splice(index + 1)
+          .join("");
+        getHashTags(newStr);
       }
     }
+  };
+
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    getHashTags(data.value);
     const note: INote = {
       ...data,
       id: uuids4(),
